@@ -3,8 +3,11 @@ const {
     createTables,
     createUser,
     createPlace,
+    createVacation,
     fetchUsers,
     fetchPlaces,
+    fetchVacations,
+    destroyVacation
 } = require('./db');
 const init = async()=> {
     console.log('connecting to database');
@@ -23,6 +26,15 @@ const init = async()=> {
     ]);
     console.log(await fetchUsers());
     console.log(await fetchPlaces());
+    
+    const vacation = await createVacation({
+        user_id: moe.id,
+        place_id: nyc.id,
+        departure_date: '02/14/2024'
+    });
+    console.log(await fetchVacations());
+    await destroyVacation({ id: vacation.id, user_id: vacation.user_id});
+    console.log(await fetchVacations());
 };
 
 init();

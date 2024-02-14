@@ -17,7 +17,7 @@ const createTables = async()=> {
         );
         CREATE TABLE vacations(
             id UUID PRIMARY KEY,
-            departure_date DATE,
+            departure_date DATE NOT NULL,
             user_id UUID REFERENCES users(id) NOT NULL,
             place_id UUID REFERENCES places(id) NOT NULL
         );
@@ -64,11 +64,41 @@ const fetchUsers = async()=> {
     return response.rows;
 }
 
+const fetchVacations = async()=> {
+    const SQL = `
+        SELECT *
+        FROM vacations
+    `;
+    const response = await client.query(SQL);
+    return response.rows;
+}
+
+const createVacation = async({ user_id, place_id, departure_date })=> {
+    const SQL = `
+        INSERT INTO vacations(id, user_id, place_id, departure_date)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+    `;
+    const response = await client.query(SQL, [uuid.v4(), user_id, place_id, departure_date]);
+    return response.rows[0];
+}
+
+const destroyVacation = async({ id, user_id}) => {
+    const SQL = `
+        DELETE FROM vacations
+        WHERE id = $1 AND user_id=$2
+    `;
+    await client.query(SQL, [id, user_id]);
+};
+
 module.exports = {
     client,
     createTables,
     createUser,
+    createVacation,
     createPlace,
     fetchPlaces,
-    fetchUsers
+    fetchUsers,
+    fetchVacations,
+    destroyVacation
 };
