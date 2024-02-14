@@ -84,6 +84,7 @@ const createVacation = async({ user_id, place_id, departure_date })=> {
 }
 
 const destroyVacation = async({ id, user_id}) => {
+    console.log(id, user_id)
     const SQL = `
         DELETE FROM vacations
         WHERE id = $1 AND user_id=$2
